@@ -1,3 +1,5 @@
 ## 1.0.0
 
-- Initial version.
+- Initial release of the package.
+- Includes `build` and `create` commands.
+

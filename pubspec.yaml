@@ -1,7 +1,8 @@
 name: w_builder
 description: A powerful CLI tool for w.ever team to architect Flutter features and boost productivity.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+homepage: https://github.com/Alaa-shibany/w_builder
+repository: https://github.com/Alaa-shibany/w_builder
 
 environment:
   sdk: ^3.8.1
@@ -28,3 +29,6 @@ dev_dependencies:
   json_serializable: ^6.9.5
   lints: ^5.0.0
   test: ^1.24.0
+
+executables:
+  w_builder:
