@@ -81,7 +81,10 @@ class CreateService {
     //handling path
     String directoryPath = p.dirname(filePath);
     //Model generator
-    final modelFiles = _modelGenerator.generateModels(config, directoryPath);
+    final modelFiles = await _modelGenerator.generateModels(
+      config,
+      directoryPath,
+    );
     if (modelFiles.isEmpty) {
       print('🟡 No models found to generate.');
     } else {
@@ -90,14 +93,14 @@ class CreateService {
       }
     }
     //Repo generator
-    final repositoryFile = _repositoryGenerator.generateRepository(
+    final repositoryFile = await _repositoryGenerator.generateRepository(
       config,
       directoryPath,
       packageName,
     );
     writeFile(path: repositoryFile.path, content: repositoryFile.content);
     //Cubit generator
-    final cubitFile = _cubitGenerator.generateCubit(
+    final cubitFile = await _cubitGenerator.generateCubit(
       config,
       directoryPath,
       packageName,

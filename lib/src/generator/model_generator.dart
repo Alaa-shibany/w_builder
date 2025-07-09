@@ -3,6 +3,8 @@
 import 'dart:io';
 
 import 'package:mustache_template/mustache.dart';
+import 'package:path/path.dart' as p;
+import 'package:w_builder/src/helper/package_path_getter.dart';
 
 import '../helper/string_helper.dart';
 
@@ -15,10 +17,10 @@ class GeneratedFile {
 }
 
 class ModelGenerator {
-  List<GeneratedFile> generateModels(
+  Future<List<GeneratedFile>> generateModels(
     Map<String, dynamic> config,
     String jsonFilePath,
-  ) {
+  ) async {
     final filesToCreate = <GeneratedFile>[];
     final modelsToProcess = <Map<String, dynamic>>[];
     final featureName = config['feature_name'] as String;
@@ -55,16 +57,18 @@ class ModelGenerator {
       final modelName = modelConfig['name'] as String;
       final filePath = '$jsonFilePath/models/${modelName.toSnakeCase()}.dart';
 
-      filesToCreate.add(GeneratedFile(path: filePath, content: fileContent));
+      filesToCreate.add(
+        GeneratedFile(path: filePath, content: await fileContent),
+      );
     }
 
     return filesToCreate;
   }
 
-  String _buildModelContent(
+  Future<String> _buildModelContent(
     Map<String, dynamic> modelConfig,
     List<String> allModelNames,
-  ) {
+  ) async {
     final modelName = modelConfig['name'] as String;
     final modelFields = modelConfig['fields'] as List<dynamic>;
     final fileName = modelName.toSnakeCase();
@@ -91,8 +95,10 @@ class ModelGenerator {
       return {'name': name, 'type': type, 'json_key': jsonKey};
     }).toList();
 
-    final templatePath = 'lib/src/templates/model.mustache';
-    final templateString = File(templatePath).readAsStringSync();
+    final templatePath = Directory(
+      p.join(await getPackagePath('templates'), 'model.mustache'),
+    );
+    final templateString = File(templatePath.path).readAsStringSync();
 
     final template = Template(templateString, htmlEscapeValues: false);
 

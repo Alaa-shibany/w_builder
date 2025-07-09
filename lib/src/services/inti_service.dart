@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'dart:isolate';
 
 class BuildService {
   Future<void> handleBuildCommand(String projectPath) async {
@@ -24,9 +25,19 @@ class BuildService {
     }
 
     print('⚙️ Copying core files...');
-    // final scriptPath = Platform.script.toFilePath();
-    // final cliRootDir = p.dirname(p.dirname(scriptPath));
-    final sourceDir = Directory(p.join(projectPath, 'bin', 'src', 'core'));
+
+    final packageUri = Uri.parse('package:w_builder/w_builder.dart');
+    final packagePathUri = await Isolate.resolvePackageUri(packageUri);
+    if (packagePathUri == null) {
+      print('❌ Error: Could not resolve package path. Cannot copy core files.');
+      return;
+    }
+    print(packagePathUri.toFilePath());
+    final cliRootDir = p.dirname(p.dirname(packagePathUri.toFilePath()));
+
+    final sourceDir = Directory(p.join(cliRootDir, 'lib', 'src', 'core'));
+    print(sourceDir.path);
+    print(await sourceDir.exists());
     final destDir = Directory(p.join(projectPath, 'lib', 'core'));
     copyDirectory(sourceDir, destDir);
 

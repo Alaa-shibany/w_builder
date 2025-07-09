@@ -1,5 +1,7 @@
 // lib/src/generators/repository_generator.dart
 
+import 'package:w_builder/src/helper/package_path_getter.dart';
+
 import 'model_generator.dart';
 import '../helper/string_helper.dart';
 import 'package:path/path.dart' as p;
@@ -7,11 +9,11 @@ import 'dart:io';
 import 'package:mustache_template/mustache_template.dart';
 
 class RepositoryGenerator {
-  GeneratedFile generateRepository(
+  Future<GeneratedFile> generateRepository(
     Map<String, dynamic> config,
     String outputDir,
     String packageName,
-  ) {
+  ) async {
     final featureName = config['feature_name'] as String;
     final endpoint = config['endpoint'] as String;
     final requestType = (config['request_type'] as String).toLowerCase();
@@ -44,9 +46,11 @@ class RepositoryGenerator {
       methodArgs.add({'type': bodyModelName, 'name': 'body'});
       imports.add("import '../models/${bodyModelName.toSnakeCase()}.dart';");
     }
+    final templatePath = Directory(
+      p.join(await getPackagePath('templates'), 'repository.mustache'),
+    );
+    final templateString = File(templatePath.path).readAsStringSync();
 
-    final templatePath = 'lib/src/templates/repository.mustache';
-    final templateString = File(templatePath).readAsStringSync();
     final template = Template(templateString, htmlEscapeValues: false);
 
     final rendered = template.renderString({

@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'src/commands/base_command.dart';
-import 'src/di_container.dart';
+import '../lib/src/commands/base_command.dart';
+import '../lib/src/di_container.dart';
 import 'package:args/args.dart';
 
 void main(List<String> arguments) async {

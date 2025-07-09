@@ -1,5 +1,7 @@
 // lib/src/generators/cubit_generator.dart
 
+import 'package:w_builder/src/helper/package_path_getter.dart';
+
 import 'model_generator.dart';
 import '../helper/string_helper.dart';
 import 'package:path/path.dart' as p;
@@ -7,18 +9,18 @@ import 'dart:io';
 import 'package:mustache_template/mustache_template.dart';
 
 class CubitGenerator {
-  GeneratedFile generateCubit(
+  Future<GeneratedFile> generateCubit(
     Map<String, dynamic> config,
     String outputDir,
     String packageName,
-  ) {
+  ) async {
     final featureName = config['feature_name'] as String;
     final bool isPagination = config['pagination'] ?? false;
 
     //Build depend on request type
     final String content = isPagination
-        ? _buildPaginationCubitContent(config, packageName)
-        : _buildStandardCubitContent(config, packageName);
+        ? await _buildPaginationCubitContent(config, packageName)
+        : await _buildStandardCubitContent(config, packageName);
 
     final filePath = p.join(
       outputDir,
@@ -30,10 +32,10 @@ class CubitGenerator {
   }
 
   //Stander
-  String _buildStandardCubitContent(
+  Future<String> _buildStandardCubitContent(
     Map<String, dynamic> config,
     String packageName,
-  ) {
+  ) async {
     final featureName = config['feature_name'] as String;
     final cubitClassName = '${featureName}Cubit';
     final repositoryClassName = '${featureName}Repository';
@@ -62,8 +64,10 @@ class CubitGenerator {
       }
     }
 
-    final templatePath = 'lib/src/templates/standard_cubit.mustache';
-    final templateString = File(templatePath).readAsStringSync();
+    final templatePath = Directory(
+      p.join(await getPackagePath('templates'), 'standard_cubit.mustache'),
+    );
+    final templateString = File(templatePath.path).readAsStringSync();
     final template = Template(templateString, htmlEscapeValues: false);
 
     return template.renderString({
@@ -82,10 +86,10 @@ class CubitGenerator {
   }
 
   //Pagination
-  String _buildPaginationCubitContent(
+  Future<String> _buildPaginationCubitContent(
     Map<String, dynamic> config,
     String packageName,
-  ) {
+  ) async {
     final featureName = config['feature_name'] as String;
     final requestType = (config['request_type'] as String).toLowerCase();
     final methodName = '$requestType${featureName}Data';
@@ -118,9 +122,11 @@ class CubitGenerator {
         repoCallArgs.add('${param['name']}: _${param['name']}');
       }
     }
+    final templatePath = Directory(
+      p.join(await getPackagePath('templates'), 'pagination_cubit.mustache'),
+    );
+    final templateString = File(templatePath.path).readAsStringSync();
 
-    final templatePath = 'lib/src/templates/pagination_cubit.mustache';
-    final templateString = File(templatePath).readAsStringSync();
     final template = Template(templateString, htmlEscapeValues: false);
 
     return template.renderString({

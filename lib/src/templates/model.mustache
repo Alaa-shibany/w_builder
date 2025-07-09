@@ -1,10 +1,10 @@
 {{#imports}}
-import '../../../lib/src/templates/{{{.}}}';
+import '{{{.}}}';
 {{/imports}}
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part '../../../lib/src/templates/{{file_name}}.freezed.dart';
-part '../../../lib/src/templates/{{file_name}}.g.dart';
+part '{{file_name}}.freezed.dart';
+part '{{file_name}}.g.dart';
 
 @freezed
 abstract class {{model_name}} with _${{model_name}} {

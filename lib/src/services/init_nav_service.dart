@@ -1,11 +1,12 @@
 // lib/src/services/init_nav_service.dart
 
 import 'dart:io';
+import 'dart:isolate';
 import 'package:mustache_template/mustache.dart';
-// import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as p;
 
 class InitNavService {
-  final String _templatesDir = 'lib/src/templates';
+  String _templatesDir = 'lib/src/templates';
 
   Future<void> handle() async {
     print('🚦 Initializing navigation with go_router...');
@@ -18,9 +19,9 @@ class InitNavService {
   }
 
   // This orchestrator method now mirrors your `generateModels` structure
-  void _createRouterFiles() {
+  void _createRouterFiles() async {
     print('  -> Creating navigation files...');
-
+    await getPackagePath();
     // Define the files to be created and their content builders
     final filesToCreate = {
       'lib/routes/app_router.dart': _buildAppRouterContent,
@@ -38,6 +39,20 @@ class InitNavService {
       file.writeAsStringSync(fileContent);
       print('     - Created $outputPath');
     });
+  }
+
+  Future<void> getPackagePath() async {
+    final packageUri = Uri.parse('package:w_builder/w_builder.dart');
+    final packagePathUri = await Isolate.resolvePackageUri(packageUri);
+    if (packagePathUri == null) {
+      print('❌ Error: Could not resolve package path. Cannot copy core files.');
+      return;
+    }
+    print(packagePathUri.toFilePath());
+    final cliRootDir = p.dirname(p.dirname(packagePathUri.toFilePath()));
+
+    final sourceDir = Directory(p.join(cliRootDir, 'lib', 'src', 'templates'));
+    _templatesDir = sourceDir.path;
   }
 
   // --- Private Content Builders  ---
