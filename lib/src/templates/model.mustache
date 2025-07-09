@@ -1,0 +1,18 @@
+{{#imports}}
+import '{{{.}}}';
+{{/imports}}
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '{{file_name}}.freezed.dart';
+part '{{file_name}}.g.dart';
+
+@freezed
+abstract class {{model_name}} with _${{model_name}} {
+  const factory {{model_name}}({
+{{#fields}}
+    {{#json_key}}@JsonKey(name: '{{json_key}}') {{/json_key}}required {{type}} {{name}},
+{{/fields}}
+  }) = _{{model_name}};
+
+  factory {{model_name}}.fromJson(Map<String, dynamic> json) => _${{model_name}}FromJson(json);
+}

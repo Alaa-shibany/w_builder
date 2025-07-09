@@ -1,0 +1,39 @@
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:{{package_name}}/core/services/generic_cubit/generic_cubit.dart';
+import 'package:{{package_name}}/core/services/generic_cubit/generic_state.dart';
+import 'package:{{package_name}}/core/model/pagination_model.dart';
+import '../repo/{{feature_name_snake}}_repository.dart';
+import '../models/{{response_model_snake}}.dart';
+{{#imports}}
+{{{.}}}
+{{/imports}}
+
+class {{cubit_class_name}} extends BaseCubit<PaginationModel<{{response_model}}>> {
+  final {{repository_class_name}} _repository;
+
+  {{#fields_to_store}}
+  late final {{.}};
+  {{/fields_to_store}}
+
+  {{cubit_class_name}}(this._repository) : super(GenericInitial<PaginationModel<{{response_model}}>>());
+
+  late final pagingController = PagingController<int, {{response_model}}>(
+    getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
+    fetchPage: (pageKey) => _fetchPage(pageKey),
+  );
+
+  Future<List<{{response_model}}>> _fetchPage(int pageKey) async {
+    final result = await _repository.{{method_name}}({{#repo_call_args}}{{.}}, {{/repo_call_args}});
+    result.fold(
+      (failure) => [],
+      (paginationData) => paginationData.items,
+    );
+    return [];
+  }
+
+  @override
+  Future<void> close() {
+    pagingController.dispose();
+    return super.close();
+  }
+}

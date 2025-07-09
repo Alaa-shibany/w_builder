@@ -1,0 +1,56 @@
+// lib/src/di_container.dart
+
+import 'package:w_builder/src/commands/base_command.dart';
+import 'package:get_it/get_it.dart';
+import 'commands/build_command.dart';
+import 'commands/create_command.dart';
+import 'generator/cubit_generator.dart';
+import 'generator/model_generator.dart';
+import 'generator/repository_generator.dart';
+import 'services/build_service.dart';
+import 'services/create_service.dart';
+import 'services/run_service.dart';
+
+final sl = GetIt.instance;
+
+void setupDependencies() {
+  // SERVICES
+  // Singleton: Just one instance
+  sl.registerLazySingleton(() => BuildService());
+  sl.registerLazySingleton(
+    () => CreateService(
+      modelGenerator: sl(), // get_it will pass the instance auto
+      repositoryGenerator: sl(),
+      cubitGenerator: sl(),
+      runServiceFactory:
+          ({
+            required Map<String, dynamic> config,
+            required String outputDir,
+            required String packageName,
+          }) => RunService(
+            config: config,
+            outputDir: outputDir,
+            packageName: packageName,
+          ),
+    ),
+  );
+
+  /* GENERATORS
+   LazySingleton:Create the instance when i call it for the firs time then
+   keep it until the app die
+  */
+  sl.registerLazySingleton(() => ModelGenerator());
+  sl.registerLazySingleton(() => RepositoryGenerator());
+  sl.registerLazySingleton(() => CubitGenerator());
+
+  // COMMANDS
+  // Factory: Create instance each time i call it
+  sl.registerFactory<BaseCommand>(
+    () => BuildCommand(sl()),
+    instanceName: 'build',
+  );
+  sl.registerFactory<BaseCommand>(
+    () => CreateCommand(sl()),
+    instanceName: 'create',
+  );
+}

@@ -1,0 +1,43 @@
+import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+{{#is_pagination}}
+import 'package:{{package_name}}/core/model/pagination_model.dart';
+{{/is_pagination}}
+import 'package:{{package_name}}/core/services/api_services.dart';
+import 'package:{{package_name}}/core/services/end_points.dart';
+import 'package:{{package_name}}/core/services/failure_services.dart';
+import '../models/{{response_model_file}}';
+{{#imports}}
+{{{.}}}
+{{/imports}}
+
+class {{repository_class_name}} {
+  final ApiService _apiService;
+
+  {{repository_class_name}}(this._apiService);
+
+  Future<Either<Failure, {{return_type}}>> {{method_name}}({{#has_args}}{ {{#method_args}}required {{type}} {{name}}, {{/method_args}} }{{/has_args}}) async {
+    try {
+      final response = await _apiService.{{request_type}}(
+        EndPoints.{{endpoint}}{{#has_query}}, queryParams: {{query_map}}{{/has_query}}{{#has_body}}, data: body.toJson(){{/has_body}}
+      );
+
+      {{#is_pagination}}
+      final items = (response.data['data']['data'] as List)
+          .map((i) => {{response_model}}.fromJson(i)).toList();
+      final pageSize = response.data['data']['per_page'] as int;
+      final isReachMax = response.data['data']['next_page_url'] == null;
+      final data = PaginationModel(items: items, pageSize: pageSize, isReachMax: isReachMax);
+      {{/is_pagination}}
+      {{^is_pagination}}
+      final data = {{response_model}}.fromJson(response.data['data']);
+      {{/is_pagination}}
+
+      return Right(data);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+}
