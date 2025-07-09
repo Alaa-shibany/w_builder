@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 1.1.2
+
+- ✨ Fix package path locator.
+
 ## 1.1.1
 
 - ✨ Move src folder.
