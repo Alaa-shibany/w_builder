@@ -1,4 +1,4 @@
-import './dio_settings.dart';
+import 'dio_settings.dart';
 import 'package:dio/dio.dart';
 
 class ApiService {

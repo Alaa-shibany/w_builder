@@ -1,15 +1,15 @@
 // lib/src/di_container.dart
 
-import 'package:w_builder/src/commands/base_command.dart';
+import 'commands/base_command.dart';
 import 'package:get_it/get_it.dart';
-import 'package:w_builder/src/commands/init_nav_command.dart';
-import 'package:w_builder/src/services/init_nav_service.dart';
-import 'commands/build_command.dart';
+import 'commands/init_nav_command.dart';
+import 'services/init_nav_service.dart';
+import 'commands/init_command.dart';
 import 'commands/create_command.dart';
 import 'generator/cubit_generator.dart';
 import 'generator/model_generator.dart';
 import 'generator/repository_generator.dart';
-import 'services/build_service.dart';
+import 'services/inti_service.dart';
 import 'services/create_service.dart';
 import 'services/run_service.dart';
 

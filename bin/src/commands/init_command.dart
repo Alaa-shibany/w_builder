@@ -1,10 +1,10 @@
 import 'package:args/args.dart';
-import '../services/build_service.dart';
+import '../services/inti_service.dart';
 import 'base_command.dart';
 
 class BuildCommand extends BaseCommand {
   @override
-  final String name = 'build';
+  final String name = 'init';
   @override
   final String description =
       'Sets up the project with core files and dependencies.';

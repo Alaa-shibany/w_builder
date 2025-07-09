@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import '../services/run_service.dart';
+import 'run_service.dart';
 
 import '../utils/file_writer.dart';
 import '../generator/model_generator.dart';

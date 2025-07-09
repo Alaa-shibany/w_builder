@@ -26,7 +26,7 @@ class BuildService {
     print('⚙️ Copying core files...');
     // final scriptPath = Platform.script.toFilePath();
     // final cliRootDir = p.dirname(p.dirname(scriptPath));
-    final sourceDir = Directory(p.join(projectPath, 'lib', 'src', 'core'));
+    final sourceDir = Directory(p.join(projectPath, 'bin', 'src', 'core'));
     final destDir = Directory(p.join(projectPath, 'lib', 'core'));
     copyDirectory(sourceDir, destDir);
 
