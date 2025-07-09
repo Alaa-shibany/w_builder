@@ -2,6 +2,8 @@
 
 import 'package:w_builder/src/commands/base_command.dart';
 import 'package:get_it/get_it.dart';
+import 'package:w_builder/src/commands/init_nav_command.dart';
+import 'package:w_builder/src/services/init_nav_service.dart';
 import 'commands/build_command.dart';
 import 'commands/create_command.dart';
 import 'generator/cubit_generator.dart';
@@ -17,6 +19,8 @@ void setupDependencies() {
   // SERVICES
   // Singleton: Just one instance
   sl.registerLazySingleton(() => BuildService());
+  sl.registerLazySingleton(() => InitNavService());
+
   sl.registerLazySingleton(
     () => CreateService(
       modelGenerator: sl(), // get_it will pass the instance auto
@@ -47,10 +51,14 @@ void setupDependencies() {
   // Factory: Create instance each time i call it
   sl.registerFactory<BaseCommand>(
     () => BuildCommand(sl()),
-    instanceName: 'build',
+    instanceName: 'init',
   );
   sl.registerFactory<BaseCommand>(
     () => CreateCommand(sl()),
     instanceName: 'create',
+  );
+  sl.registerFactory<BaseCommand>(
+    () => InitNavCommand(sl()),
+    instanceName: 'init:nav',
   );
 }

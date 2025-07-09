@@ -7,8 +7,9 @@ void main(List<String> arguments) async {
   setupDependencies();
   final parser = ArgParser();
   final commands = <String, BaseCommand>{
-    'build': sl.get<BaseCommand>(instanceName: 'build'),
+    'init': sl.get<BaseCommand>(instanceName: 'init'),
     'create': sl.get<BaseCommand>(instanceName: 'create'),
+    'init:nav': sl.get<BaseCommand>(instanceName: 'init:nav'),
   };
   commands.forEach((name, command) {
     parser.addCommand(name, command.parser);

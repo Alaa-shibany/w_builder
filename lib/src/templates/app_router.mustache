@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'unknown_page.dart';
+import 'navigator_observer.dart';
+import 'app_routes.dart';
+
+// You can use a key for the navigator if needed, e.g., for showing dialogs.
+// final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+class AppRouter {
+  AppRouter._();
+
+  static final GoRouter router = GoRouter(
+    // navigatorKey: _rootNavigatorKey,
+    initialLocation: AppRoutes.splash,
+    observers: [MyNavigatorObserver()],
+    debugLogDiagnostics: true,
+    routes: [
+      //** Splash Screen **/
+      GoRoute(
+        name: AppRoutes.splash,
+        path: AppRoutes.splash,
+        builder: (context, state) => const Scaffold(body: Center(child: Text("Splash Screen"))), // Replace with your actual Splash Screen
+      ),
+    ],
+    errorPageBuilder: (context, state) => MaterialPage(
+      key: state.pageKey,
+      child: const UnknownPage(),
+    ),
+  );
+}
+
