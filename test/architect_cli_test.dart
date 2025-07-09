@@ -1,4 +1,4 @@
-import 'package:w_builder/architect_cli.dart';
+import 'package:w_builder/w_builder.dart';
 import 'package:test/test.dart';
 
 void main() {
