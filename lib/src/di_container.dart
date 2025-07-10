@@ -6,12 +6,14 @@ import 'commands/init_nav_command.dart';
 import 'services/init_nav_service.dart';
 import 'commands/init_command.dart';
 import 'commands/create_command.dart';
+import 'commands/create_screen_command.dart';
 import 'generator/cubit_generator.dart';
 import 'generator/model_generator.dart';
 import 'generator/repository_generator.dart';
 import 'services/inti_service.dart';
 import 'services/create_service.dart';
 import 'services/run_service.dart';
+import 'services/create_screen_service.dart';
 
 final sl = GetIt.instance;
 
@@ -20,7 +22,7 @@ void setupDependencies() {
   // Singleton: Just one instance
   sl.registerLazySingleton(() => BuildService());
   sl.registerLazySingleton(() => InitNavService());
-
+  sl.registerLazySingleton(() => CreateScreenService());
   sl.registerLazySingleton(
     () => CreateService(
       modelGenerator: sl(), // get_it will pass the instance auto
@@ -60,5 +62,9 @@ void setupDependencies() {
   sl.registerFactory<BaseCommand>(
     () => InitNavCommand(sl()),
     instanceName: 'init:nav',
+  );
+  sl.registerFactory<BaseCommand>(
+    () => CreateScreenCommand(sl()),
+    instanceName: 'create:screen',
   );
 }

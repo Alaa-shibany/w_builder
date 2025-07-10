@@ -56,8 +56,8 @@ class RunService {
 
     final importStatements =
         """
-import '${mainPath}repo/${featureSnakeCase}_repository.dart';
-import '${mainPath}cubit/${featureSnakeCase}_cubit.dart';
+import '$mainPath/repo/${featureSnakeCase}_repository.dart';
+import '$mainPath/cubit/${featureSnakeCase}_cubit.dart';
 """;
 
     final repositoryInjection =

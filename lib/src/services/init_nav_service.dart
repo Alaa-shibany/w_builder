@@ -12,14 +12,14 @@ class InitNavService {
     print('🚦 Initializing navigation with go_router...');
 
     await _addGoRouterDependency();
-    _createRouterFiles(); // The orchestrator method
+    await _createRouterFiles(); // The orchestrator method
     _printInstructions();
 
     print('\n✅ Navigation setup is almost complete!');
   }
 
   // This orchestrator method now mirrors your `generateModels` structure
-  void _createRouterFiles() async {
+  Future<void> _createRouterFiles() async {
     print('  -> Creating navigation files...');
     await getPackagePath();
     // Define the files to be created and their content builders

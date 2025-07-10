@@ -15,7 +15,10 @@ class RepositoryGenerator {
     String packageName,
   ) async {
     final featureName = config['feature_name'] as String;
-    final endpoint = config['endpoint'] as String;
+    String endpoint = config['endpoint'] as String;
+    if (endpoint.startsWith('/')) {
+      endpoint = endpoint.substring(1);
+    }
     final requestType = (config['request_type'] as String).toLowerCase();
     final isPagination = config['pagination'] ?? false;
 

@@ -10,6 +10,7 @@ void main(List<String> arguments) async {
     'init': sl.get<BaseCommand>(instanceName: 'init'),
     'create': sl.get<BaseCommand>(instanceName: 'create'),
     'init:nav': sl.get<BaseCommand>(instanceName: 'init:nav'),
+    'create:screen': sl.get<BaseCommand>(instanceName: 'create:screen'),
   };
   commands.forEach((name, command) {
     parser.addCommand(name, command.parser);
