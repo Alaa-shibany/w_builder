@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 1.2.2
+
+- ✨ Add screen generator.
+
 ## 1.1.2
 
 - ✨ Fix package path locator.
