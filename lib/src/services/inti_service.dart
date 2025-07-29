@@ -15,8 +15,8 @@ class BuildService {
       'flutter_bloc',
       'get_it',
       'equatable',
-      'shared_preferences'
-          'freezed_annotation',
+      'shared_preferences',
+      'freezed_annotation',
       'dev:build_runner',
       'dev:freezed',
       'dev:json_serializable',
