@@ -12,8 +12,8 @@ extension StringCasingExtension on String {
   /// Example: "hello world" -> "HelloWorld"
   String toPascalCase() {
     if (isEmpty) return '';
-    return split(RegExp(r'[ _-]'))
-        .where((word) => word.isNotEmpty)
+    final parts = _getWords();
+    return parts
         .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
         .join('');
   }
@@ -22,8 +22,12 @@ extension StringCasingExtension on String {
   /// Example: "hello world" -> "helloWorld"
   String toCamelCase() {
     if (isEmpty) return '';
-    final pascal = toPascalCase();
-    return pascal[0].toLowerCase() + pascal.substring(1);
+    final parts = _getWords();
+    final firstWord = parts.first.toLowerCase();
+    final otherWords = parts
+        .skip(1)
+        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase());
+    return [firstWord, ...otherWords].join('');
   }
 
   /// Converts a string to `Title Case`.
@@ -35,5 +39,14 @@ extension StringCasingExtension on String {
         .where((word) => word.isNotEmpty)
         .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase())
         .join(' ');
+  }
+
+  List<String> _getWords() {
+    // This regex splits by spaces, underscores, hyphens, and case changes.
+    final regExp = RegExp(r'(?<=[a-z])(?=[A-Z])|_|-|\s+');
+    return replaceAll(
+      regExp,
+      ' ',
+    ).split(' ').where((s) => s.isNotEmpty).toList();
   }
 }

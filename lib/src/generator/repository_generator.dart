@@ -1,79 +1,94 @@
 // lib/src/generators/repository_generator.dart
 
-import 'package:w_builder/src/helper/package_path_getter.dart';
-
-import 'model_generator.dart';
-import '../helper/string_helper.dart';
-import 'package:path/path.dart' as p;
 import 'dart:io';
 import 'package:mustache_template/mustache_template.dart';
+import 'package:path/path.dart' as p;
+import 'package:w_builder/src/helper/package_path_getter.dart';
+import '../helper/string_helper.dart';
+import 'model_generator.dart';
 
+//This code will generate one repo and put all CRUD functions in it
 class RepositoryGenerator {
-  Future<GeneratedFile> generateRepository(
-    Map<String, dynamic> config,
-    String outputDir,
-    String packageName,
-  ) async {
-    final featureName = config['feature_name'] as String;
-    String endpoint = config['endpoint'] as String;
-    if (endpoint.startsWith('/')) {
-      endpoint = endpoint.substring(1);
-    }
-    final requestType = (config['request_type'] as String).toLowerCase();
-    final isPagination = config['pagination'] ?? false;
+  Future<GeneratedFile> generateRepository({
+    required String featureName,
+    required List<Map<String, dynamic>> apis,
+    required String outputDir,
+    required String packageName,
+  }) async {
+    final repositoryClassName = '${featureName.toPascalCase()}Repository';
+    final methodsData = <Map<String, dynamic>>[];
+    final imports = <String>{};
+    bool isPaginationGlobal = false;
 
-    final repositoryClassName = '${featureName}Repository';
-    final methodName = '$requestType${featureName}Data';
+    for (final api in apis) {
+      final endpoint = (api['endpoint'] as String).startsWith('/')
+          ? (api['endpoint'] as String).substring(1).split('/').join('_')
+          : (api['endpoint'] as String).split('/').join('_');
 
-    final responseModelConfig =
-        config['response_model'] ??
-        (config['list_response_model'] as List).first;
-    final responseModel = responseModelConfig['name'] as String;
-    final responseModelFile = '${responseModel.toSnakeCase()}.dart';
+      final requestType = (api['request_type'] as String).toLowerCase();
+      final isPagination = api['pagination'] ?? false;
+      if (isPagination) isPaginationGlobal = true;
 
-    final methodArgs = <Map<String, String>>[];
-    final imports = <String>[];
-    final queryMap = <String, String>{};
-    bool hasBody = false;
+      final responseModelConfig =
+          api['response_model'] ?? (api['list_response_model'] as List).first;
+      final responseModelName = responseModelConfig['name'] as String;
 
-    if (config['query_parameters'] != null) {
-      for (final param in config['query_parameters'] as List) {
-        methodArgs.add({'type': param['type'], 'name': param['name']});
-        queryMap["'${param['name']}'"] = param['name'];
+      imports.add(
+        "import '../models/${responseModelName.toSnakeCase()}.dart';",
+      );
+
+      final methodArgs = <Map<String, String>>[];
+      final queryMapEntries = <String>[];
+      bool hasBody = false;
+
+      if (api['query_parameters'] != null) {
+        for (final param in api['query_parameters'] as List) {
+          final paramName = (param['name'] as String).toCamelCase();
+          methodArgs.add({'type': param['type'], 'name': paramName});
+          queryMapEntries.add("'${param['name']}': $paramName");
+        }
       }
+
+      if (api['body'] != null) {
+        hasBody = true;
+        final bodyModelName =
+            '${(api['name'] as String).toPascalCase()}RequestBodyModel';
+        methodArgs.add({'type': bodyModelName, 'name': 'body'});
+        imports.add("import '../models/${bodyModelName.toSnakeCase()}.dart';");
+      }
+
+      // --- Assemble data for this specific method ---
+      methodsData.add({
+        'method_name': (api['name'] as String).toCamelCase(),
+        'request_type': requestType,
+        'endpoint': endpoint,
+        'response_model': responseModelName,
+        'return_type': isPagination
+            ? 'PaginationModel<$responseModelName>'
+            : responseModelName,
+        'is_pagination': isPagination,
+        'has_args': methodArgs.isNotEmpty,
+        'method_args': methodArgs,
+        'has_query': queryMapEntries.isNotEmpty,
+        'query_map': '{${queryMapEntries.join(', ')}}',
+        'has_body': hasBody,
+      });
     }
 
-    if (config['body'] != null) {
-      hasBody = true;
-      final bodyModelName = '${featureName}RequestBodyModel';
-      methodArgs.add({'type': bodyModelName, 'name': 'body'});
-      imports.add("import '../models/${bodyModelName.toSnakeCase()}.dart';");
-    }
-    final templatePath = Directory(
-      p.join(await getPackagePath('templates'), 'repository.mustache'),
+    // --- Template Rendering ---
+    final templatePath = p.join(
+      await getPackagePath('templates'),
+      'repository.mustache',
     );
-    final templateString = File(templatePath.path).readAsStringSync();
-
+    final templateString = await File(templatePath).readAsStringSync();
     final template = Template(templateString, htmlEscapeValues: false);
 
     final rendered = template.renderString({
       'package_name': packageName,
       'repository_class_name': repositoryClassName,
-      'method_name': methodName,
-      'request_type': requestType,
-      'endpoint': endpoint,
-      'response_model': responseModel,
-      'response_model_file': responseModelFile,
-      'return_type': isPagination
-          ? 'PaginationModel<$responseModel>'
-          : responseModel,
-      'imports': imports,
-      'method_args': methodArgs,
-      'has_args': methodArgs.isNotEmpty,
-      'query_map': queryMap,
-      'has_query': queryMap.isNotEmpty,
-      'has_body': hasBody,
-      'is_pagination': isPagination,
+      'imports': imports.map((e) => e).toList(), // Convert Set to List
+      'is_pagination_global': isPaginationGlobal,
+      'methods': methodsData, // Pass the list of methods to the template
     });
 
     final filePath = p.join(

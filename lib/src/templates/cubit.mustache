@@ -1,0 +1,25 @@
+import 'package:bloc/bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:{{package_name}}/core/services/failure_services.dart';
+import '../../repo/{{feature_name_snake}}_repository.dart';
+{{#imports}}
+{{{ . }}}
+{{/imports}}
+
+part '{{state_file_name}}';
+part '{{cubit_file_name}}.freezed.dart';
+
+class {{cubit_class_name}} extends Cubit<{{state_class_name}}> {
+  final {{repository_class_name}} _repository;
+
+  {{cubit_class_name}}(this._repository) : super(const {{state_class_name}}.initial());
+
+  Future<void> {{method_name}}({{#has_args}}{ {{#method_args}}required {{type}} {{name}}, {{/method_args}} }{{/has_args}}) async {
+    emit(const {{state_class_name}}.loading());
+    final result = await _repository.{{method_name_in_repo}}({{#repo_call_args}}{{.}}, {{/repo_call_args}});
+    result.fold(
+      (failure) => emit({{state_class_name}}.error(failure.message)),
+      (data) => emit({{state_class_name}}.success(data)),
+    );
+  }
+}

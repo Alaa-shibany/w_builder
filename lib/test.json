@@ -1,33 +1,29 @@
 {
   "feature_name": "Dashboard",
-  "endpoint": "dashboard",
-  "request_type": "GET",
-  "pagination": true,
-  "query_parameters":[
+  "apis": [
     {
-      "type":"int",
-      "name":"page"
-    }
-  ],
-  "body":{
-    "name":"String",
-    "age":"int"
-  },
-  "list_response_model": [
-    {
-      "name": "DashboardUserModel",
-      "fields": [
-        { "name": "id", "type": "int" },
-        { "name": "username", "type": "String" },
-        { "name": "news", "type": "List<LatestNewsModel>", "json_key": "news"}
+      "name": "getDashboardData",
+      "endpoint": "dashboard",
+      "request_type": "GET",
+      "pagination": true,
+      "query_parameters": [
+        { "type": "int", "name": "page" }
+      ],
+      "list_response_model": [
+        { "name": "DashboardItemModel", "fields": [{ "name": "id", "type": "int" }] }
       ]
     },
     {
-      "name": "LatestNewsModel",
-      "fields": [
-        { "name": "newsId", "type": "int", "json_key": "id" },
-        { "name": "title", "type": "String" }
-      ]
+      "name": "updateUsername",
+      "endpoint": "user/update",
+      "request_type": "POST",
+      "body": {
+        "username": "String"
+      },
+      "response_model": {
+        "name": "UpdateUserResponseModel",
+        "fields": [{ "name": "status", "type": "String" }]
+      }
     }
   ]
 }

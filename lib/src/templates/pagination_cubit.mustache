@@ -1,21 +1,24 @@
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:{{package_name}}/core/services/generic_cubit/generic_cubit.dart';
 import 'package:{{package_name}}/core/services/generic_cubit/generic_state.dart';
 import 'package:{{package_name}}/core/model/pagination_model.dart';
-import '../repo/{{feature_name_snake}}_repository.dart';
-import '../models/{{response_model_snake}}.dart';
+import '../../repo/{{feature_name_snake}}_repository.dart';
 {{#imports}}
 {{{.}}}
 {{/imports}}
 
-class {{cubit_class_name}} extends BaseCubit<PaginationModel<{{response_model}}>> {
+part '{{state_file_name}}';
+part '{{cubit_file_name}}.freezed.dart';
+
+class {{cubit_class_name}} extends Cubit<{{state_class_name}}> {
   final {{repository_class_name}} _repository;
 
   {{#fields_to_store}}
   late final {{.}};
   {{/fields_to_store}}
 
-  {{cubit_class_name}}(this._repository) : super(GenericInitial<PaginationModel<{{response_model}}>>());
+  {{cubit_class_name}}(this._repository) : super(const {{state_class_name}}.initial());
 
   late final pagingController = PagingController<int, {{response_model}}>(
     getNextPageKey: (state) => state.lastPageIsEmpty ? null : state.nextIntPageKey,
@@ -24,11 +27,13 @@ class {{cubit_class_name}} extends BaseCubit<PaginationModel<{{response_model}}>
 
   Future<List<{{response_model}}>> _fetchPage(int pageKey) async {
     final result = await _repository.{{method_name}}({{#repo_call_args}}{{.}}, {{/repo_call_args}});
-    result.fold(
-      (failure) => [],
+     return result.fold(
+      (failure) {
+        emit({{state_class_name}}.error(failure.message));
+        return [];
+      },
       (paginationData) => paginationData.items,
     );
-    return [];
   }
 
   @override

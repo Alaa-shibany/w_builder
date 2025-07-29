@@ -1,25 +1,27 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-{{#is_pagination}}
-import 'package:{{package_name}}/core/model/pagination_model.dart';
-{{/is_pagination}}
 import 'package:{{package_name}}/core/services/api_services.dart';
 import 'package:{{package_name}}/core/services/end_points.dart';
 import 'package:{{package_name}}/core/services/failure_services.dart';
-import '../models/{{response_model_file}}';
 {{#imports}}
-{{{.}}}
+{{{ . }}}
 {{/imports}}
+{{#is_pagination_global}}
+import 'package:{{package_name}}/core/model/pagination_model.dart';
+{{/is_pagination_global}}
 
 class {{repository_class_name}} {
   final ApiService _apiService;
 
   {{repository_class_name}}(this._apiService);
 
+  {{#methods}}
   Future<Either<Failure, {{return_type}}>> {{method_name}}({{#has_args}}{ {{#method_args}}required {{type}} {{name}}, {{/method_args}} }{{/has_args}}) async {
     try {
       final response = await _apiService.{{request_type}}(
-        EndPoints.{{endpoint}}{{#has_query}}, queryParams: {{query_map}}{{/has_query}}{{#has_body}}, data: body.toJson(){{/has_body}}
+        EndPoints.{{endpoint}}{{#has_query}},
+        queryParams: {{query_map}}{{/has_query}}{{#has_body}},
+        data: body.toJson(){{/has_body}}
       );
 
       {{#is_pagination}}
@@ -40,4 +42,6 @@ class {{repository_class_name}} {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  {{/methods}}
 }

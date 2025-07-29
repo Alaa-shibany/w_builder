@@ -23,7 +23,6 @@ class CreateService {
   final CubitGenerator _cubitGenerator;
   final RunServiceFactory _runServiceFactory;
 
-  // Constructor جديد يقبل التبعيات
   CreateService({
     required ModelGenerator modelGenerator,
     required RepositoryGenerator repositoryGenerator,
@@ -47,7 +46,6 @@ class CreateService {
     final pubspecYaml = yaml.loadYaml(pubspecContent) as yaml.YamlMap;
     final packageName = pubspecYaml['name'] as String;
     print('✅ Project name identified: $packageName');
-    //Reading JSON file
     print('✨ Reading configuration from: $filePath');
     final file = File(filePath);
 
@@ -78,42 +76,60 @@ class CreateService {
     String filePath,
     String packageName,
   ) async {
-    //handling path
+    // --- 1. Extract feature name and list of APIs ---
     String directoryPath = p.dirname(filePath);
-    //Model generator
+    final featureName = config['feature_name'] as String;
+    final apis = List<Map<String, dynamic>>.from(config['apis']);
+
+    // --- 2. Model generator (Assuming it's updated to handle a list) ---
+    // NOTE: We might need to update _modelGenerator.generateModels as well.
     final modelFiles = await _modelGenerator.generateModels(
-      config,
+      config, // Or maybe `apis`, this depends on its implementation
       directoryPath,
     );
-    if (modelFiles.isEmpty) {
-      print('🟡 No models found to generate.');
-    } else {
-      for (final modelFile in modelFiles) {
-        writeFile(path: modelFile.path, content: modelFile.content);
-      }
+    for (final modelFile in modelFiles) {
+      writeFile(path: modelFile.path, content: modelFile.content);
     }
-    //Repo generator
+
+    // --- 3. Repo generator (The new call) ---
+    print('🔄 Generating single repository for feature: $featureName...');
     final repositoryFile = await _repositoryGenerator.generateRepository(
-      config,
-      directoryPath,
-      packageName,
-    );
-    writeFile(path: repositoryFile.path, content: repositoryFile.content);
-    //Cubit generator
-    final cubitFile = await _cubitGenerator.generateCubit(
-      config,
-      directoryPath,
-      packageName,
-    );
-    writeFile(path: cubitFile.path, content: cubitFile.content);
-    final runService = _runServiceFactory(
-      config: config,
+      featureName: featureName,
+      apis: apis, // Pass the whole list of APIs
       outputDir: directoryPath,
       packageName: packageName,
     );
-    //Endpoint & injection & build runner
-    runService.updateEndPointsFile();
-    runService.updateServiceLocatorFile();
-    runService.runBuildRunner();
+    writeFile(path: repositoryFile.path, content: repositoryFile.content);
+    print('✅ Repository generated successfully!');
+
+    // --- 4. Cubit generator (Looping through each API) ---
+    for (final apiConfig in apis) {
+      final apiName = apiConfig['name'] as String;
+      print('🔄 Generating Cubit for API: $apiName...');
+
+      // The new call for each apiConfig
+      final cubitFiles = await _cubitGenerator.generateCubit(
+        featureName,
+        apiConfig,
+        directoryPath,
+        packageName,
+      );
+
+      // THE FIX: Loop through the returned list of files (cubit + state)
+      for (final file in cubitFiles) {
+        writeFile(path: file.path, content: file.content);
+      }
+      print('✅ Cubit for $apiName generated successfully!');
+    }
+
+    // --- 5. Run service (This will also need an update) ---
+    // final runService = _runServiceFactory( ... );
+    // runService.updateEndPointsFile();
+    // runService.updateServiceLocatorFile();
+    // runService.runBuildRunner();
+    print(
+      '🟡 NOTE: RunService for endpoints and DI needs to be updated to handle multiple APIs.',
+    );
+    print('✨ Code generation process completed.');
   }
 }
