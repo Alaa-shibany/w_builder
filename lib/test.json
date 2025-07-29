@@ -2,7 +2,7 @@
   "feature_name": "Dashboard",
   "endpoint": "dashboard",
   "request_type": "GET",
-  "pagination": false,
+  "pagination": true,
   "query_parameters":[
     {
       "type":"int",
