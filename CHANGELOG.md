@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.0.0
+
+- ✨ Package can handel more apis in one config.
+
 ## 1.2.2
 
 - ✨ Add screen generator.
