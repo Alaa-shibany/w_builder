@@ -33,7 +33,9 @@ void setupDependencies() {
             required Map<String, dynamic> config,
             required String outputDir,
             required String packageName,
+            required String featureName,
           }) => RunService(
+            featureName: featureName,
             config: config,
             outputDir: outputDir,
             packageName: packageName,

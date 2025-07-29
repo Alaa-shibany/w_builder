@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import 'package:w_builder/src/helper/string_helper.dart';
 
 class RunService {
   final Map<String, dynamic> _config;
@@ -7,14 +8,16 @@ class RunService {
   final String packageName;
   late final String _featureName;
   late final String _endpoint;
+  final String featureName;
 
   RunService({
     required Map<String, dynamic> config,
     required String outputDir,
     required this.packageName,
+    required this.featureName,
   }) : _config = config,
        _outputDir = outputDir {
-    _featureName = _config['feature_name'] as String;
+    _featureName = _config['name'] as String;
     _endpoint = _config['endpoint'] as String;
   }
 
@@ -29,7 +32,7 @@ class RunService {
 
     String content = file.readAsStringSync();
     final newEndpoint =
-        "  static const String ${_featureName.toLowerCase()} = '$_endpoint';";
+        "  static const String ${_endpoint.split('/').join('_')} = '$_endpoint';";
 
     final lastBraceIndex = content.lastIndexOf('}');
     if (lastBraceIndex != -1) {
@@ -39,7 +42,43 @@ class RunService {
     }
   }
 
-  void updateServiceLocatorFile() {
+  void addRepoServiceLocatorFile() {
+    final filePath = p.join('lib', 'core', 'services', 'service_locator.dart');
+    final file = File(filePath);
+    if (!file.existsSync()) {
+      print(
+        '🟡 Warning: Service Locator file not found at $filePath. Skipping.',
+      );
+      return;
+    }
+    List<String> pathSegments = _outputDir.split('/');
+    print(pathSegments);
+    String mainPath =
+        'package:$packageName/${pathSegments.sublist(1).join('/')}';
+    print('THE MAIN PATH IS => $mainPath');
+
+    final importStatements =
+        """
+import '${mainPath}repo/${featureName.toSnakeCase()}_repository.dart';
+""";
+
+    final repositoryInjection =
+        "  sl.registerLazySingleton(() => ${featureName}Repository(sl()));";
+
+    String content = file.readAsStringSync();
+
+    content = '$importStatements\n$content';
+
+    final injectionPoint = content.lastIndexOf('}');
+    if (injectionPoint != -1) {
+      content =
+          '${content.substring(0, injectionPoint)}$repositoryInjection\n}\n';
+      file.writeAsStringSync(content);
+      print('✅ Injected dependencies for: $_featureName');
+    }
+  }
+
+  void addCubitsServiceLocatorFile() {
     final filePath = p.join('lib', 'core', 'services', 'service_locator.dart');
     final file = File(filePath);
     if (!file.existsSync()) {
@@ -52,18 +91,15 @@ class RunService {
     String mainPath =
         'package:$packageName/${pathSegments.sublist(1).join('/')}';
     print('THE MAIN PATH IS => $mainPath');
-    final featureSnakeCase = _featureName.toLowerCase();
+    final featureSnakeCase = _featureName.toSnakeCase();
 
     final importStatements =
         """
-import '$mainPath/repo/${featureSnakeCase}_repository.dart';
-import '$mainPath/cubit/${featureSnakeCase}_cubit.dart';
+import '${mainPath}cubits/${featureSnakeCase}_cubit/${featureSnakeCase}_cubit.dart';
 """;
 
-    final repositoryInjection =
-        "  sl.registerLazySingleton(() => ${_featureName}Repository(sl()));";
     final cubitInjection =
-        "  sl.registerFactory(() => ${_featureName}Cubit(sl()));";
+        "  sl.registerFactory(() => ${_featureName.toPascalCase()}Cubit(sl()));";
 
     String content = file.readAsStringSync();
 
@@ -71,8 +107,7 @@ import '$mainPath/cubit/${featureSnakeCase}_cubit.dart';
 
     final injectionPoint = content.lastIndexOf('}');
     if (injectionPoint != -1) {
-      content =
-          '${content.substring(0, injectionPoint)}$repositoryInjection\n$cubitInjection\n}\n';
+      content = '${content.substring(0, injectionPoint)}$cubitInjection\n}\n';
       file.writeAsStringSync(content);
       print('✅ Injected dependencies for: $_featureName');
     }

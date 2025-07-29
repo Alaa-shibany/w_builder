@@ -15,6 +15,7 @@ typedef RunServiceFactory =
       required Map<String, dynamic> config,
       required String outputDir,
       required String packageName,
+      required String featureName,
     });
 
 class CreateService {
@@ -81,21 +82,24 @@ class CreateService {
     final featureName = config['feature_name'] as String;
     final apis = List<Map<String, dynamic>>.from(config['apis']);
 
+    print('🔄 Generating models');
     // --- 2. Model generator (Assuming it's updated to handle a list) ---
-    // NOTE: We might need to update _modelGenerator.generateModels as well.
-    final modelFiles = await _modelGenerator.generateModels(
-      config, // Or maybe `apis`, this depends on its implementation
-      directoryPath,
-    );
-    for (final modelFile in modelFiles) {
-      writeFile(path: modelFile.path, content: modelFile.content);
+    for (final data in apis) {
+      final modelFiles = await _modelGenerator.generateModels(
+        data,
+        directoryPath,
+      );
+      for (final modelFile in modelFiles) {
+        writeFile(path: modelFile.path, content: modelFile.content);
+      }
     }
+    print('✅ Models generated successfully!');
 
     // --- 3. Repo generator (The new call) ---
     print('🔄 Generating single repository for feature: $featureName...');
     final repositoryFile = await _repositoryGenerator.generateRepository(
       featureName: featureName,
-      apis: apis, // Pass the whole list of APIs
+      apis: apis,
       outputDir: directoryPath,
       packageName: packageName,
     );
@@ -114,22 +118,28 @@ class CreateService {
         directoryPath,
         packageName,
       );
-
-      // THE FIX: Loop through the returned list of files (cubit + state)
       for (final file in cubitFiles) {
         writeFile(path: file.path, content: file.content);
       }
       print('✅ Cubit for $apiName generated successfully!');
     }
+    RunService? runService;
+    for (final data in apis) {
+      runService = _runServiceFactory(
+        featureName: config['feature_name'],
+        config: data,
+        outputDir: directoryPath,
+        packageName: packageName,
+      );
 
-    // --- 5. Run service (This will also need an update) ---
-    // final runService = _runServiceFactory( ... );
-    // runService.updateEndPointsFile();
-    // runService.updateServiceLocatorFile();
-    // runService.runBuildRunner();
-    print(
-      '🟡 NOTE: RunService for endpoints and DI needs to be updated to handle multiple APIs.',
-    );
+      runService.updateEndPointsFile();
+      runService.addCubitsServiceLocatorFile();
+    }
+    runService!.addRepoServiceLocatorFile();
+    runService.runBuildRunner();
+    // print(
+    //   '🟡 NOTE: RunService for endpoints and DI needs to be updated to handle multiple APIs.',
+    // );
     print('✨ Code generation process completed.');
   }
 }

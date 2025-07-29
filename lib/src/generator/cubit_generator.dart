@@ -23,7 +23,7 @@ class CubitGenerator {
     final stateClassName = '${apiNamePascal}State';
     final cubitFileName = '${apiNameSnake}_cubit.dart';
     final stateFileName = '${apiNameSnake}_state.dart';
-    final apiDirName = apiNameSnake;
+    final apiDirName = '${apiNameSnake}_cubit';
 
     final repositoryClassName = '${featureName.toPascalCase()}Repository';
     final isPagination = apiConfig['pagination'] ?? false;
@@ -85,7 +85,7 @@ class CubitGenerator {
       htmlEscapeValues: false,
     );
     final content = template.renderString({
-      'cubit_file_name': cubitFileName,
+      'cubit_file_name': cubitFileName.split('.').first,
       'state_class_name': stateClassName,
       'success_data_model': successDataModel,
     });
@@ -116,7 +116,7 @@ class CubitGenerator {
     final String templateName;
     final Map<String, dynamic> renderData = {};
     final imports = <String>{
-      "import 'package:{{package_name}}/features/{{feature_name}}/models/${responseModelName.toSnakeCase()}.dart';",
+      "import '../../models/${responseModelName.toSnakeCase()}.dart';",
     };
     final repoCallArgs = <String>[];
 
@@ -129,7 +129,7 @@ class CubitGenerator {
         final bodyModelName = '${apiNamePascal}RequestBodyModel';
         fieldsToStore.add('late final $bodyModelName _body;');
         imports.add(
-          "import 'package:{{package_name}}/features/{{feature_name}}/models/${bodyModelName.toSnakeCase()}.dart';",
+          "import '../../models/${bodyModelName.toSnakeCase()}.dart';",
         );
         repoCallArgs.add('body: _body');
       }
@@ -155,7 +155,7 @@ class CubitGenerator {
         final bodyModelName = '${apiNamePascal}RequestBodyModel';
         methodArgs.add({'type': bodyModelName, 'name': 'body'});
         imports.add(
-          "import 'package:{{package_name}}/features/{{feature_name}}/models/${bodyModelName.toSnakeCase()}.dart';",
+          "import '../../models/${bodyModelName.toSnakeCase()}.dart';",
         );
         repoCallArgs.add('body: body');
       }
@@ -183,7 +183,7 @@ class CubitGenerator {
           )
           .toList(),
       'state_file_name': stateFileName,
-      'cubit_file_name': cubitFileName,
+      'cubit_file_name': cubitFileName.split('.').first,
       'cubit_class_name': cubitClassName,
       'state_class_name': stateClassName,
       'repository_class_name': repositoryClassName,

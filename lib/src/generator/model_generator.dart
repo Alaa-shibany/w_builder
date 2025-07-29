@@ -23,7 +23,7 @@ class ModelGenerator {
   ) async {
     final filesToCreate = <GeneratedFile>[];
     final modelsToProcess = <Map<String, dynamic>>[];
-    final featureName = config['feature_name'] as String;
+    final featureName = config['name'] as String;
     //Handling body and convert it to model
     if (config['body'] != null) {
       final bodyFields = config['body'] as Map<String, dynamic>;
@@ -69,7 +69,7 @@ class ModelGenerator {
     Map<String, dynamic> modelConfig,
     List<String> allModelNames,
   ) async {
-    final modelName = modelConfig['name'] as String;
+    final modelName = (modelConfig['name'] as String).toPascalCase();
     final modelFields = modelConfig['fields'] as List<dynamic>;
     final fileName = modelName.toSnakeCase();
 
