@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.0.1
+
+- ✨ Package use enum for cubit states.
+
 ## 2.0.0
 
 - ✨ Package can handel more apis in one config.

@@ -1,9 +1,10 @@
 part of '{{cubit_file_name}}.dart';
 
 @freezed
-class {{state_class_name}} with _${{state_class_name}} {
-  const factory {{state_class_name}}.initial() = _Initial;
-  const factory {{state_class_name}}.loading() = _Loading;
-  const factory {{state_class_name}}.success({{success_data_model}} data) = _Success;
-  const factory {{state_class_name}}.error(String message) = _Error;
+abstract class {{state_class_name}} with _${{state_class_name}} {
+  const factory {{state_class_name}}({
+    @Default(SubmissionStatus.initial) SubmissionStatus status,
+    {{success_data_model}}? data,
+    String? errorMessage,
+  }) = _CreateTeacherState; 
 }
