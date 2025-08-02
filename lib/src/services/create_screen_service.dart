@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:mustache_template/mustache.dart';
+import 'package:w_builder/src/helper/package_path_getter.dart';
 import '../di_container.dart';
 import '../helper/string_helper.dart';
 import 'init_nav_service.dart';
 import 'package:yaml/yaml.dart' as yaml;
 
 class CreateScreenService {
-  final String _templatesDir = 'lib/src/templates';
+  // final String _templatesDir = 'lib/src/templates';
 
   Future<void> handle(String screenName) async {
     print('✨ Creating a new screen: $screenName');
@@ -63,7 +64,7 @@ class CreateScreenService {
     return featureDir.path;
   }
 
-  void _createFiles(String screenName, String featureDir) {
+  void _createFiles(String screenName, String featureDir) async {
     print('  -> Creating screen and config files...');
     final screenNameSnake = screenName.toSnakeCase();
 
@@ -75,7 +76,10 @@ class CreateScreenService {
     };
 
     // Create Screen file
-    final screenContent = _renderTemplate('screen.mustache', templateData);
+    final screenContent = await _renderTemplate(
+      'screen.mustache',
+      templateData,
+    );
     final screenPath = p.join(
       featureDir,
       'presentation',
@@ -85,7 +89,10 @@ class CreateScreenService {
     print('     - Created $screenPath');
 
     // Create Config file
-    final configContent = _renderTemplate('config.mustache', templateData);
+    final configContent = await _renderTemplate(
+      'config.mustache',
+      templateData,
+    );
     final configPath = p.join(featureDir, 'config.json');
     File(configPath).writeAsStringSync(configContent);
     print('     - Created $configPath');
@@ -151,8 +158,14 @@ class CreateScreenService {
     );
   }
 
-  String _renderTemplate(String templateName, Map<String, dynamic> data) {
-    final templatePath = p.join(_templatesDir, templateName);
+  Future<String> _renderTemplate(
+    String templateName,
+    Map<String, dynamic> data,
+  ) async {
+    final templatePath = p.join(
+      await getPackagePath('templates'),
+      templateName,
+    );
     final templateString = File(templatePath).readAsStringSync();
     final template = Template(templateString, htmlEscapeValues: false);
     return template.renderString(data);

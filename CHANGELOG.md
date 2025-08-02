@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.0.2
+
+- ✨ Fix create screen command.
+
 ## 2.0.1
 
 - ✨ Package use enum for cubit states.

@@ -1,19 +1,35 @@
 {
-  "feature_name": "{{screenNamePascalCase}}",
-  "endpoint": "/{{screenNameSnakeCase}}",
-  "request_type": "get",
-  "pagination": false,
-  "response_model": {
-    "name": "{{screenNamePascalCase}}Model",
-    "fields": [
-      {
-        "name": "id",
-        "type": "int"
+  "feature_name": "RegisterRequests",
+  "apis": [
+    {
+      "name": "getRequests",
+      "endpoint": "requests",
+      "request_type": "GET",
+      "pagination": true,
+      "query_parameters": [
+        { "type": "int", "name": "page" }
+      ],
+      "list_response_model": [
+        { "name": "RegisterRequestModel", "fields": [
+          { "name": "id", "type": "int" },
+          { "name": "student", "type": "String" },
+          { "name": "course", "type": "String" },
+          { "name": "createdAt", "type": "String" , "json_key":"created_at" }
+          
+          ] }
+      ]
+    },
+    {
+      "name": "acceptRequest",
+      "endpoint": "request/accept",
+      "request_type": "POST",
+      "body": {
+        "id": "int"
       },
-      {
-        "name": "name",
-        "type": "String"
+      "response_model": {
+        "name": "AcceptRequestModel",
+        "fields": [{ "name": "message", "type": "String" }]
       }
-    ]
-  }
+    }
+  ]
 }
