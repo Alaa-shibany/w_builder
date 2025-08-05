@@ -1,31 +1,43 @@
 import 'package:dio/dio.dart';
+// ignore: implementation_imports
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:w_builder/src/core/services/failure_service/auth_failure.dart';
+import 'package:w_builder/src/core/services/failure_service/failure.dart';
+import 'package:w_builder/src/core/services/failure_service/generice_failure.dart';
+import 'package:w_builder/src/core/services/failure_service/internet_failure.dart';
 
-abstract class Failure {
-  final String message;
-  const Failure(this.message);
-}
-
-class ServerFailure extends Failure {
-  ServerFailure(super.message);
-
-  factory ServerFailure.fromDioException(DioException e) {
+class FailureFactory extends Failure {
+  FailureFactory(super.message);
+  static Failure fromDioException(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        return ServerFailure(
-            "انتهت مهلة الاتصال. يرجى التحقق من اتصالك بالإنترنت.");
+        return InternetFailure(
+          "The connection timed out. Please check your internet connection and try again.",
+        );
       case DioExceptionType.connectionError:
-        return ServerFailure(
-            "عفواً! يبدو أنك غير متصل بالإنترنت.\nيرجى التحقق من اتصالك والمحاولة مرة أخرى.");
+      case DioExceptionType.unknown:
+        return InternetFailure(
+          "Oops! It looks like you are offline. Please check your connection and try again.",
+        );
       case DioExceptionType.badResponse:
         if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
-          return ServerFailure('Unauthorized access.');
+          return AuthFailure('Unauthorized access. Please log in again.');
         }
-        return ServerFailure(
-            'حدث خطأ ما في النظام : => ${e.response!.statusCode}');
+        return GenericFailureFactory(
+          'Something went wrong on the server. Please try again later. Status code: ${e.response?.data['message']}',
+        );
       default:
-        return ServerFailure('An unexpected error occurred.');
+        return GenericFailureFactory(
+          'An unexpected error occurred. Please try again.',
+        );
     }
+  }
+
+  @override
+  Future<void> handle(BuildContext context, {void Function()? onRetry}) {
+    GenericFailureFactory('An unexpected error occurred. Please try again.');
+    throw UnimplementedError();
   }
 }

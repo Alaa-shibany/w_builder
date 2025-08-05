@@ -9,8 +9,9 @@ import 'package:get_it/get_it.dart';
 
 final sl = GetIt.instance;
 
-void setupServiceLocator() {
+Future<void> setupServiceLocator() async {
   // It will be created only ONCE
+
   sl.registerSingletonAsync<SharedPreferences>(
     () => SharedPreferences.getInstance(),
   );

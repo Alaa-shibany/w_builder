@@ -1,6 +1,1 @@
-enum SubmissionStatus {
-  initial, 
-  loading, 
-  success, 
-  error,   
-}
+enum SubmissionStatus { initial, loading, success, error }

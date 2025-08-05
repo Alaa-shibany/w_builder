@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.0.3
+
+- ✨ Add failure factory.
+
 ## 2.0.2
 
 - ✨ Fix create screen command.

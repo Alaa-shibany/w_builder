@@ -59,7 +59,7 @@ class RunService {
 
     final importStatements =
         """
-import '${mainPath}repo/${featureName.toSnakeCase()}_repository.dart';
+import '$mainPath/repo/${featureName.toSnakeCase()}_repository.dart';
 """;
 
     final repositoryInjection =
@@ -95,7 +95,7 @@ import '${mainPath}repo/${featureName.toSnakeCase()}_repository.dart';
 
     final importStatements =
         """
-import '${mainPath}cubits/${featureSnakeCase}_cubit/${featureSnakeCase}_cubit.dart';
+import '$mainPath/cubits/${featureSnakeCase}_cubit/${featureSnakeCase}_cubit.dart';
 """;
 
     final cubitInjection =

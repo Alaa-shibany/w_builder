@@ -1,6 +1,6 @@
 name: w_builder
 description: A powerful CLI tool for w.ever team to architect Flutter features and boost productivity.
-version: 2.0.2
+version: 2.0.3
 homepage: https://github.com/Alaa-shibany/w_builder
 repository: https://github.com/Alaa-shibany/w_builder
 
@@ -13,8 +13,10 @@ dependencies:
   dartz: ^0.10.1
   dio: ^5.8.0+1
   equatable: ^2.0.7
+  flutter_animate: ^4.5.2
   flutter_bloc: ^9.1.1
   get_it: ^8.0.3
+  google_fonts: ^6.3.0
   infinite_scroll_pagination: ^5.1.0
   mustache_template: ^2.0.0
   package_info_plus: ^8.3.0
