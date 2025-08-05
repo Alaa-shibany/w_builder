@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:w_builder/src/core/services/failure_service/failure.dart';
-import 'package:w_builder/src/core/shared/dialogs/internet_dialog.dart';
+import '../failure_service/failure.dart';
+import '../../shared/dialogs/internet_dialog.dart';
 
 class InternetFailure extends Failure {
   InternetFailure(super.message);

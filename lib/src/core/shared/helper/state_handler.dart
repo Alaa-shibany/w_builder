@@ -1,9 +1,9 @@
 // lib/common/utils/state_handler.dart
 
 import 'package:flutter/material.dart';
-import 'package:w_builder/src/core/services/failure_service/failure.dart';
-import 'package:w_builder/src/core/services/status.dart';
-import 'package:w_builder/src/core/shared/dialogs/loading_dialog.dart';
+import '../../services/failure_service/failure.dart';
+import '../../services/status.dart';
+import '../../shared/dialogs/loading_dialog.dart';
 
 void handleSubmissionState({
   required BuildContext context,

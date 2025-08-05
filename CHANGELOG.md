@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.1.3
+
+- ✨ Fix core file imports.
+
 ## 2.1.2
 
 - ✨ Add cancel token.

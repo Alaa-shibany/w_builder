@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 // ignore: implementation_imports
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:w_builder/src/core/services/failure_service/auth_failure.dart';
-import 'package:w_builder/src/core/services/failure_service/failure.dart';
-import 'package:w_builder/src/core/services/failure_service/generice_failure.dart';
-import 'package:w_builder/src/core/services/failure_service/internet_failure.dart';
+// import 'package:flutter/src/widgets/framework.dart';
+import 'failure_service/auth_failure.dart';
+import 'failure_service/failure.dart';
+import 'failure_service/internet_failure.dart';
+import 'failure_service/generice_failure.dart';
 
 class FailureFactory extends Failure {
   FailureFactory(super.message);
