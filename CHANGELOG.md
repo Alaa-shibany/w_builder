@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.1.1
+
+- ✨ Add cancel token.
+
 ## 2.1.0
 
 - ✨ Add theme init command.

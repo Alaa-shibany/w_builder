@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:{{package_name}}/core/services/status.dart';
+import 'package:dio/dio.dart';
 import '../../repo/{{feature_name_snake}}_repository.dart';
 {{#imports}}
 {{{ . }}}
@@ -11,6 +12,7 @@ part '{{cubit_file_name}}.freezed.dart';
 
 class {{cubit_class_name}} extends Cubit<{{state_class_name}}> {
   final {{repository_class_name}} _repository;
+  final _cancelToken = CancelToken();
 
   {{cubit_class_name}}(this._repository) : super(const {{state_class_name}}());
 
@@ -21,5 +23,11 @@ class {{cubit_class_name}} extends Cubit<{{state_class_name}}> {
       (failure) => emit(state.copyWith(status: SubmissionStatus.error , errorMessage: failure.message)),
       (data) => emit(state.copyWith(status: SubmissionStatus.success , data: data)),
     );
+  }
+
+ @override
+  Future<void> close() {
+    _cancelToken.cancel('Cubit was closed');
+    return super.close();
   }
 }
