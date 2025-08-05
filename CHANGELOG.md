@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.1.0
+
+- ✨ Add theme init command.
+
 ## 2.0.3
 
 - ✨ Add failure factory.

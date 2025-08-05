@@ -8,8 +8,9 @@ void main(List<String> arguments) async {
   final parser = ArgParser();
   final commands = <String, BaseCommand>{
     'init': sl.get<BaseCommand>(instanceName: 'init'),
-    'create': sl.get<BaseCommand>(instanceName: 'create'),
     'init:nav': sl.get<BaseCommand>(instanceName: 'init:nav'),
+    'init:theme': sl.get<BaseCommand>(instanceName: 'init:theme'),
+    'create': sl.get<BaseCommand>(instanceName: 'create'),
     'create:screen': sl.get<BaseCommand>(instanceName: 'create:screen'),
   };
   commands.forEach((name, command) {
