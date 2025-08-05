@@ -5,6 +5,6 @@ abstract class {{state_class_name}} with _${{state_class_name}} {
   const factory {{state_class_name}}({
     @Default(SubmissionStatus.initial) SubmissionStatus status,
     {{success_data_model}}? data,
-    String? errorMessage,
+    Failure? failure,
   }) = _CreateTeacherState; 
 }
