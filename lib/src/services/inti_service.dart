@@ -18,8 +18,8 @@ class BuildService {
       'shared_preferences',
       'freezed_annotation',
       'google_fonts',
-      'flutter_animate'
-          'dev:build_runner',
+      'flutter_animate',
+      'dev:build_runner',
       'dev:freezed',
       'dev:json_serializable',
     ];

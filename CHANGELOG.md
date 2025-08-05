@@ -1,8 +1,12 @@
 # CHANGELOG.md
 
-## 2.1.1
+## 2.1.2
 
 - ✨ Add cancel token.
+
+## 2.1.1
+
+- ✨ Fix build runner add command.
 
 ## 2.1.0
 
