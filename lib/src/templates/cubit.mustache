@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:{{package_name}}/core/services/status.dart';
+import 'package:{{package_name}}/core/services/failure_service/failure.dart';
+import 'package:{{package_name}}/core/services/failure_services.dart';
 import '../../repo/{{feature_name_snake}}_repository.dart';
 {{#imports}}
 {{{ . }}}
@@ -18,7 +20,7 @@ class {{cubit_class_name}} extends Cubit<{{state_class_name}}> {
     emit(state.copyWith(status: SubmissionStatus.loading));
     final result = await _repository.{{method_name_in_repo}}({{#repo_call_args}}{{.}}, {{/repo_call_args}});
     result.fold(
-      (failure) => emit(state.copyWith(status: SubmissionStatus.error , errorMessage: failure.message)),
+      (failure) => emit(state.copyWith(status: SubmissionStatus.error , failure: failure)),
       (data) => emit(state.copyWith(status: SubmissionStatus.success , data: data)),
     );
   }

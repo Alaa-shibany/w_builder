@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## 2.1.1
+
+- ✨ Fix build runner add command.
+
 ## 2.1.0
 
 - ✨ Add theme init command.

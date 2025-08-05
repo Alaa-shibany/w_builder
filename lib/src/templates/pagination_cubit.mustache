@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:{{package_name}}/core/model/pagination_model.dart';
 import 'package:{{package_name}}/core/services/status.dart';
+import 'package:{{package_name}}/core/services/failure_service/failure.dart';
+import 'package:{{package_name}}/core/services/failure_services.dart';
 
 import '../../repo/{{feature_name_snake}}_repository.dart';
 {{#imports}}
@@ -30,7 +32,7 @@ class {{cubit_class_name}} extends Cubit<{{state_class_name}}> {
     final result = await _repository.{{method_name}}({{#repo_call_args}}{{.}}, {{/repo_call_args}});
      return result.fold(
       (failure) {
-         emit(state.copyWith(status: SubmissionStatus.error , errorMessage: failure.message));
+         emit(state.copyWith(status: SubmissionStatus.error , failure: failure));
         return [];
       },
       (paginationData) => paginationData.items,
